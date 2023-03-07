@@ -77,7 +77,8 @@ class RecipeList(models.Model):
         help_text='Время приготовления в минутах (минимум 1 минута)',
         verbose_name='Время приготовления в минутах',
         validators=[
-            MinValueValidator(1, 'Время приготовления не может быть меньше '
-                                 'минуты')
+            MinValueValidator(
+                1, 'Время приготовления не может быть меньше минуты'
+            )
         ]
     )
