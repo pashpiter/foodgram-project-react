@@ -8,12 +8,14 @@ from user.models import User
 class Tag(models.Model):
     name = models.CharField(
         max_length=200,
+        unique=True,
         help_text='Например: Завтрак',
         verbose_name='Название'
     )
     color = models.CharField(
         null=True,
         blank=True,
+        unique=True,
         max_length=7,
         help_text='Например: #E26C2D',
         verbose_name='Цвет в HEX'
@@ -21,6 +23,7 @@ class Tag(models.Model):
     slug = models.SlugField(
         null=True,
         blank=True,
+        unique=True,
         max_length=200,
         help_text='Например: breakfast',
         verbose_name='Уникальный слаг',
@@ -29,6 +32,7 @@ class Tag(models.Model):
 class Ingridient(models.Model):
     name = models.CharField(
         max_length=200,
+        unique=True,
         help_text='Например: Капуста',
         verbose_name='Название ингридиента'
     )
@@ -46,12 +50,13 @@ class RecipeList(models.Model):
     )
     author = models.ForeignKey(
         User,
-        verbose_name='Автор рецепта'
+        verbose_name='Автор рецепта',
+        on_delete=models.CASCADE
     )
     ingridietnts = models.ManyToManyField(
         Ingridient,
         related_name='ingridients',
-        verbose_name='Ингридиенты'
+        verbose_name='Ингридиенты',
     )
     def is_favorited(self):
         pass
@@ -69,7 +74,7 @@ class RecipeList(models.Model):
         'images/image.jpeg',
         verbose_name='Ссылка на картинку готового блюда на сайте'
     )
-    text = models.CharField(
+    text = models.TextField(
         help_text='Описание рецепта',
         verbose_name='Описание рецепта'
     )
