@@ -136,6 +136,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
 }
 
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'user.serializers.UserRegistrationSerializer',
+        'current_user': 'user.serializers.UserGetSerializer',
+    },
+}
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
     'AUTH_HEADER_TYPES': ('Bearer',),
