@@ -36,6 +36,14 @@ class User(AbstractUser):
         help_text='Например: Теркин',
         verbose_name='Фамилия'
     )
+    role = models.CharField(
+        'Роль',
+        max_length=16,
+        choices=CHOICES_ROLE,
+        default=USER_ROLE,
+        blank=True,
+        null=True
+    )
     # @property
     # def is_subscribed(self):
     #     return self.username in Subscribe.
