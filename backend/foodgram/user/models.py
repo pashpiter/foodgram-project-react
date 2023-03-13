@@ -44,6 +44,12 @@ class User(AbstractUser):
         blank=True,
         null=True
     )
+    password = models.CharField(
+        'Пароль',
+        max_length=255,
+        blank=True,
+        null=True
+    )
     # @property
     # def is_subscribed(self):
     #     return self.username in Subscribe.

@@ -32,7 +32,7 @@ class RecipeListAdmin(admin.ModelAdmin):
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'username', 'email', 'first_name', 'last_name', 'role'
+        'pk', 'username', 'email', 'first_name', 'last_name', 'role', 'password'
     )
     search_fields = ('username',)
     list_filter = ('username',)
