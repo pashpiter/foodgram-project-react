@@ -36,7 +36,7 @@ class APIGetTokenView(APIView):
         password = serializer.validated_data['password']
         user = get_object_or_404(User, email=email)
         if not check_password(password, user.password):
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response('Неверный пароль или почта', status=HTTP_400_BAD_REQUEST)
         return Response({'auth_token': create_jwt_token(user)})
 
 
@@ -47,7 +47,9 @@ class UserCreateGetPatchViewSet(UserViewSet):
     def perform_create(self, serializer):
         if 'role' not in self.request.data:
             serializer.save(role='user')
-        serializer.save()
+        print(self.request.data)
+        password = make_password(self.request.data.get('password'))
+        serializer.save(password=password)
     
     @action(["post"], detail=False)
     def set_password(self, request, *args, **kwargs):
@@ -63,3 +65,7 @@ class UserCreateGetPatchViewSet(UserViewSet):
         user.password = make_password(new_password)
         user.save()
         return Response('Пароль изменен', status=HTTP_200_OK)
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        return queryset
