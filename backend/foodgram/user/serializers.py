@@ -1,7 +1,9 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
-from .models import User
+
+from .models import User, Subscribe
 from .validators import validate_new_password
 
 class GetTokenSerializer(serializers.ModelSerializer):
@@ -15,10 +17,18 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
 class UserRegistrationSerializer(UserCreateSerializer):
     password = serializers.CharField(style={"input_type": "password"}, write_only=True)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'is_subscribed')
+
+    def get_is_subscribed(self, obj):
+        author = Subscribe.objects.filter(author=obj)
+        if not author:
+            return False
+        sub = self.fields.serializer._context['request'].user
+        return author.filter(subscriber=sub).exists()
 
 
 class UserSetPasswoprdSerializer(UserSerializer):
@@ -33,3 +43,11 @@ class UserSetPasswoprdSerializer(UserSerializer):
         if error:
             raise serializers.ValidationError(*error)
         return value
+    
+class IsSubscribedSeializer(serializers.ModelSerializer):
+    author = UserRegistrationSerializer(required=False)
+
+    class Meta:
+        model = Subscribe
+        fields = ('author', 'subscriber')
+        read_only_fields = ('author', 'subscriber',)

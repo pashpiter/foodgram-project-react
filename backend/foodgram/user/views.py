@@ -1,6 +1,7 @@
 from djoser.views import UserViewSet, TokenDestroyView
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers
+from rest_framework import serializers, viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.decorators import action
@@ -11,9 +12,9 @@ from django.contrib.auth import logout
 
 from .utils import create_jwt_token
 from .serializers import (
-    UserRegistrationSerializer, UserSetPasswoprdSerializer, GetTokenSerializer
+    UserRegistrationSerializer, UserSetPasswoprdSerializer, GetTokenSerializer, IsSubscribedSeializer
 )
-from .models import User
+from .models import User, Subscribe
 from .permissions import IsMe
 from rest_framework.permissions import AllowAny
 
@@ -43,11 +44,11 @@ class APIGetTokenView(APIView):
 class UserCreateGetPatchViewSet(UserViewSet):
     serializer_class = UserRegistrationSerializer
     queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         if 'role' not in self.request.data:
             serializer.save(role='user')
-        print(self.request.data)
         password = make_password(self.request.data.get('password'))
         serializer.save(password=password)
     
@@ -69,3 +70,12 @@ class UserCreateGetPatchViewSet(UserViewSet):
     def get_queryset(self):
         queryset = User.objects.all()
         return queryset
+    
+class SubscribeViewSet(viewsets.ModelViewSet):
+    queryset = Subscribe.objects.all()
+    serializer_class = IsSubscribedSeializer
+
+    def perform_create(self, serializer):
+        subscriber = get_object_or_404(User, pk=self.request.user.id)
+        author = get_object_or_404(User, pk=self.kwargs.get('user_id'))
+        serializer.save(subscriber=subscriber, author=author)

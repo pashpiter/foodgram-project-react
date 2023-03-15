@@ -1,10 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import APIGetTokenView, APIDestroyTokenView, UserCreateGetPatchViewSet
+from .views import APIGetTokenView, APIDestroyTokenView, UserCreateGetPatchViewSet, SubscribeViewSet
 from djoser.views import TokenDestroyView
 
 router = DefaultRouter()
 router.register('users', UserCreateGetPatchViewSet)
+router.register(r'users/(?P<user_id>\d+)/subscribe', SubscribeViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
