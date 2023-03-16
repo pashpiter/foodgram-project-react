@@ -27,13 +27,14 @@ class UserRegistrationSerializer(UserCreateSerializer):
         author = Subscribe.objects.filter(author=obj)
         if not author:
             return False
-        sub = self.fields.serializer._context['request'].user
+        sub = self.context['request'].user
         return author.filter(subscriber=sub).exists()
 
 
 class UserSetPasswoprdSerializer(UserSerializer):
     new_password = serializers.CharField(required=True)
     current_password = serializers.CharField(required=True)
+
     class Meta:
         model = User
         fields = ('new_password', 'current_password')
@@ -43,11 +44,22 @@ class UserSetPasswoprdSerializer(UserSerializer):
         if error:
             raise serializers.ValidationError(*error)
         return value
-    
+
+
 class IsSubscribedSeializer(serializers.ModelSerializer):
     author = UserRegistrationSerializer(required=False)
+    subscriber = serializers.HiddenField(default=False)
 
     class Meta:
         model = Subscribe
         fields = ('author', 'subscriber')
-        read_only_fields = ('author', 'subscriber',)
+
+    def to_representation(self, instance):
+        data = super(IsSubscribedSeializer, self).to_representation(instance.author)
+        data['id'] = instance.author.id
+        data['username'] = instance.author.username
+        data['email'] = instance.author.email
+        data['first_name'] = instance.author.first_name
+        data['last_name'] = instance.author.last_name
+        data['is_subscribed'] = True
+        return data

@@ -74,7 +74,7 @@ class User(AbstractUser):
 class Subscribe(models.Model):
    author = models.ForeignKey(
        User,
-       related_name='following',
+       related_name='author',
        verbose_name='Автор рецепта',
        on_delete=models.CASCADE,
    )
