@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Tag, Ingridient, RecipeList
-from user.models import User
+from user.models import User, Subscribe
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -38,8 +38,14 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('username',)
     empty_value_display = '-пусто-'
 
+class SubscribeAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk', 'author', 'subscriber'
+    )
+
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingridient, IngridientAdmin)
 admin.site.register(RecipeList, RecipeListAdmin)
 admin.site.register(User, UserAdmin)
+admin.site.register(Subscribe, SubscribeAdmin)
