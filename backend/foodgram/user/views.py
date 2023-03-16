@@ -102,4 +102,4 @@ class SubscribeViewSet(viewsets.ModelViewSet):
 
 class GetSubscriptionsView(viewsets.ReadOnlyModelViewSet):
     queryset = Subscribe.objects.all()
-    serializer_class = IsSubscribedSeializer    
+    serializer_class = IsSubscribedSeializer

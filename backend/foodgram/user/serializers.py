@@ -47,7 +47,7 @@ class UserSetPasswoprdSerializer(UserSerializer):
 
 
 class IsSubscribedSeializer(serializers.ModelSerializer):
-    author = UserRegistrationSerializer(required=False)
+    author = serializers.HiddenField(default=UserRegistrationSerializer(), required=False)
     subscriber = serializers.HiddenField(default=False)
 
     class Meta:
