@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Tag, Ingridient, RecipeList
+from .models import Tag, Ingridient, RecipeList, IngridientInRecipe
 from user.models import User, Subscribe
 
 
@@ -18,12 +18,10 @@ class IngridientAdmin(admin.ModelAdmin):
 
 class RecipeListAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'author', 'name', 'image', 'text',
-        'is_favorited', 'is_in_shopping_cart', 'cooking_time'
+        'id', 'author', 'name', 'image', 'text', 'cooking_time'
     )
     search_fields = (
-        'author', 'name', 'image', 'text',
-        'is_favorited', 'is_in_shopping_cart', 'cooking_time'
+        'author', 'name', 'image', 'text', 'cooking_time'
     )
     list_filter = (
         'author', 'name', 'cooking_time'
@@ -43,9 +41,15 @@ class SubscribeAdmin(admin.ModelAdmin):
         'pk', 'author', 'subscriber'
     )
 
+class IngridientInRecipeAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk', 'ingridients', 'recipe', 'amount'
+    )
+
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingridient, IngridientAdmin)
 admin.site.register(RecipeList, RecipeListAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Subscribe, SubscribeAdmin)
+admin.site.register(IngridientInRecipe, IngridientInRecipeAdmin)
