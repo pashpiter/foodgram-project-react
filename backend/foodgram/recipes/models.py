@@ -4,6 +4,9 @@ from django.contrib.auth import get_user_model
 
 from user.models import User
 
+MEASURMENT_UNI_CHOICES = (
+    ('g', 'г'), ('kg', 'кг'), ('ml', 'мл'), ('l', 'л'), ('piece', 'штука')
+)
 
 class Tag(models.Model):
     name = models.CharField(
@@ -29,6 +32,9 @@ class Tag(models.Model):
         verbose_name='Уникальный слаг',
     )
 
+    def __str__(self):
+        return f'{self.name}'
+
 class Ingridient(models.Model):
     name = models.CharField(
         max_length=200,
@@ -39,8 +45,12 @@ class Ingridient(models.Model):
     measurement_unit = models.CharField(
         max_length=200,
         help_text='Например: кг',
-        verbose_name='Еденицы измерения'
+        verbose_name='Еденицы измерения',
+        choices=MEASURMENT_UNI_CHOICES
     )
+
+    def __str__(self):
+        return f'{self.name}'
 
 class RecipeList(models.Model):
     tags = models.ManyToManyField(
@@ -53,17 +63,12 @@ class RecipeList(models.Model):
         verbose_name='Автор рецепта',
         on_delete=models.CASCADE
     )
-    ingridietnts = models.ManyToManyField(
+    ingridients = models.ManyToManyField(
         Ingridient,
-        related_name='ingridients',
+        related_name='recipe_ingridients',
         verbose_name='Ингридиенты',
+        through='IngridientInRecipe',
     )
-    def is_favorited(self):
-        pass
-
-    def is_in_shopping_cart(self):
-        pass
-
     name = models.CharField(
         max_length=200,
         help_text='Например: Яичница',
@@ -86,4 +91,52 @@ class RecipeList(models.Model):
                 1, 'Время приготовления не может быть меньше минуты'
             )
         ]
+    )
+
+    def __str__(self):
+        return f'{self.name}'
+
+class IngridientInRecipe(models.Model):
+    ingridients = models.ForeignKey(
+        Ingridient,
+        related_name='in_ingridients',
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        RecipeList,
+        related_name='in_recipe',
+        on_delete=models.CASCADE
+    )
+    amount = models.IntegerField(
+        verbose_name='количество',
+        help_text='Например: 1'
+    )
+
+class IsFavorited(models.Model):
+    fav_recipe = models.ForeignKey(
+       RecipeList,
+       related_name='fav_recipe',
+       verbose_name='Рецепт',
+       on_delete=models.CASCADE,
+   )
+    follower = models.ForeignKey(
+       User,
+       related_name='follower',
+       verbose_name='Пользователь',
+       on_delete=models.CASCADE,
+   )
+    
+class IsInShippingCart(models.Model):
+    food_list = models.ForeignKey(
+        RecipeList,
+        related_name='food_list',
+        verbose_name='Список продуктов из рецепта',
+        on_delete=models.CASCADE
+    )
+    user_cart = models.ForeignKey(
+        User,
+        related_name='user_cart',
+        verbose_name='Пользователь корзины',
+        on_delete=models.CASCADE,
+
     )
