@@ -97,9 +97,9 @@ class RecipeList(models.Model):
         return f'{self.name}'
 
 class IngridientInRecipe(models.Model):
-    ingridients = models.ForeignKey(
+    ingridient_in_recipe = models.ForeignKey(
         Ingridient,
-        related_name='in_ingridients',
+        related_name='in_ingridient',
         on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(

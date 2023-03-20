@@ -43,7 +43,7 @@ class SubscribeAdmin(admin.ModelAdmin):
 
 class IngridientInRecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'ingridients', 'recipe', 'amount'
+        'pk', 'ingridient_in_recipe', 'recipe', 'amount'
     )
 
 
