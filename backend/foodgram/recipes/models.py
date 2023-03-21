@@ -107,9 +107,14 @@ class IngridientInRecipe(models.Model):
         related_name='in_recipe',
         on_delete=models.CASCADE
     )
-    amount = models.IntegerField(
+    amount = models.PositiveIntegerField(
         verbose_name='количество',
-        help_text='Например: 1'
+        help_text='Например: 1',
+        validators=[
+            MinValueValidator(
+                1, 'Количество не может быть меньше 1'
+            )
+        ]
     )
 
 class IsFavorited(models.Model):
