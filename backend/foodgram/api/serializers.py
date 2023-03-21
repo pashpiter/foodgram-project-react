@@ -76,7 +76,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
     
     def update(self, instance, validated_data):
-        permission_classes = [IsAdmin,]
         tags = validated_data.pop('tags')
         ingridients = validated_data.pop('ingridients')
 
