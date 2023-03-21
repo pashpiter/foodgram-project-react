@@ -5,7 +5,8 @@ from django.contrib.auth import get_user_model
 from user.models import User
 
 MEASURMENT_UNI_CHOICES = (
-    ('g', 'г'), ('kg', 'кг'), ('ml', 'мл'), ('l', 'л'), ('piece', 'штука')
+    ('g', 'г'), ('kg', 'кг'), ('ml', 'мл'), ('l', 'л'), ('piece', 'штука'),
+    ('random', 'по вкусу')
 )
 
 class Tag(models.Model):

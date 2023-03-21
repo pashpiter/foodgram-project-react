@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from django.shortcuts import get_object_or_404
 from django.db.models import F
 
 from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart, IngridientInRecipe
 from user.serializers import UserRegistrationSerializer
-from .permissions import IsAdmin
 from .utils import UpdateIngridientsInRecipe
 
 
