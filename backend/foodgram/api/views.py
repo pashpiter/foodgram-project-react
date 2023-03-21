@@ -3,6 +3,7 @@ from django.shortcuts import render
 from recipes.models import Tag, Ingridient, RecipeList
 from rest_framework import viewsets, mixins
 from .serializers import TagSerializer, IngridientsSerializer, RecipeSerializer
+from .permissions import IsAuthorOrModeratorOrAdminOrReadOnly, IsAdmin
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

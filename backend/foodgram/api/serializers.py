@@ -4,6 +4,8 @@ from django.db.models import F
 
 from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart, IngridientInRecipe
 from user.serializers import UserRegistrationSerializer
+from .permissions import IsAdmin
+from .utils import UpdateIngridientsInRecipe
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -72,6 +74,22 @@ class RecipeSerializer(serializers.ModelSerializer):
                 through_defaults={'amount': ingridient['amount']}
             )
         return recipe
+    
+    def update(self, instance, validated_data):
+        permission_classes = [IsAdmin,]
+        tags = validated_data.pop('tags')
+        ingridients = validated_data.pop('ingridients')
+
+        if tags:
+            instance.tags.clear()
+            instance.tags.set(tags)
+
+        if ingridients:
+            instance.ingridients.clear()
+            UpdateIngridientsInRecipe(instance, ingridients)
+
+        instance.save()
+        return instance
     
     def get_is_favorited(self, obj):
         fav_recipe = IsFavorited.objects.filter(fav_recipe=obj)
