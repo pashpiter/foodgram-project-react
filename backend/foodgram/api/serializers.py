@@ -1,14 +1,16 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from django.db.models import F
 
 from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart, IngridientInRecipe
+from user.serializers import UserRegistrationSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('name', 'color', 'slug')
+        fields = ('id' ,'name', 'color', 'slug')
 
 
 class IngridientsInRecipeSerializer(serializers.ModelSerializer):
@@ -31,7 +33,9 @@ class IngridientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shipping_cart = serializers.SerializerMethodField()
-    ingridients = IngridientsInRecipeSerializer(many=True)
+    ingridients = serializers.SerializerMethodField()
+    author = UserRegistrationSerializer(read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = RecipeList
@@ -39,7 +43,19 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id', 'tags', 'author', 'ingridients', 'is_favorited',
             'is_in_shipping_cart', 'name', 'image', 'text', 'cooking_time')
         read_only_fields = ('author', 'is_favorited', 'is_in_shipping_cart')
-        
+
+    def get_ingridients(self, obj):
+        return obj.ingridients.values(
+            'id', 'name', 'measurement_unit', amount=F('in_ingridient__amount')
+        )
+    
+    def validate(self, data):
+        data.update({
+            'ingridients': self.initial_data['ingridients'],
+            'tags': self.initial_data['tags']
+        })
+        return data
+    
     def create(self, validated_data):
         ingridients = validated_data.pop('ingridients')
         tags = validated_data.pop('tags')
