@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
+from django_filters.rest_framework import DjangoFilterBackend
 
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart, IngridientInRecipe
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_204_NO
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from user.models import User
 from .serializers import TagSerializer, IngridientsSerializer, RecipeSerializer, IsFavoriteSerializer, IsInShippingCartSerializer
-from .permissions import IsAuthorOrModeratorOrAdminOrReadOnly, IsAdmin, IsAuthor
+from .permissions import IsAuthorOrAdminOrReadOnly, IsAdmin, IsAuthor
 from .mixins import CreateDestroyViewSet
 
 
@@ -27,6 +28,8 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('tags',) 
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -37,9 +40,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         elif self.request.method == 'POST':
             self.permission_classes = [IsAuthenticated,]
         elif self.request.method == 'PATCH':
-            self.permission_classes = [IsAuthorOrModeratorOrAdminOrReadOnly,]
+            self.permission_classes = [IsAuthorOrAdminOrReadOnly,]
         elif self.request.method == 'DELETE':
-            self.permission_classes = [IsAuthorOrModeratorOrAdminOrReadOnly,]
+            self.permission_classes = [IsAuthorOrAdminOrReadOnly,]
         else:
             self.permission_classes = [IsAuthenticated,]
         return super().get_permissions()
@@ -116,13 +119,13 @@ class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
             # end_ingridients
         file = open("shopping_list.txt", "w+")
         for ingridient in end_ingridients.values():
-            print(ingridient.ingridient_in_recipe.name ,ingridient.amount)
             file.write(''.join(
                 f'{ingridient.ingridient_in_recipe.name} '
                 f'({ingridient.ingridient_in_recipe.measurement_unit}) - '
                 f'{ingridient.amount}\n'
             ))
-        response = HttpResponse(file, content_type='text/plain')
+        response = FileResponse(file, as_attachment=True, filename='shopping_list.txt')
+        # response = HttpResponse(file, content_type='text/plain')
         # response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
-        file.close()
+        # file.close()
         return response
