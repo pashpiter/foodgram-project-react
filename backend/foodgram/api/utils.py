@@ -10,6 +10,6 @@ def UpdateIngridientsInRecipe(recipe, ingridients):
         )
 
     recipe.ingridients.add(
-                current_ingridient,
-                through_defaults={'amount': ingridient['amount']}
-            )
+        current_ingridient,
+        through_defaults={'amount': ingridient['amount']}
+    )

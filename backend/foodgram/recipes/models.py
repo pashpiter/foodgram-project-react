@@ -125,16 +125,16 @@ class IngridientInRecipe(models.Model):
 
 class IsFavorited(models.Model):
     fav_recipe = models.ForeignKey(
-       RecipeList,
-       related_name='fav_recipe',
-       verbose_name='Рецепт',
-       on_delete=models.CASCADE,
+        RecipeList,
+        related_name='fav_recipe',
+        verbose_name='Рецепт',
+        on_delete=models.CASCADE,
     )
     follower = models.ForeignKey(
-       User,
-       related_name='follower',
-       verbose_name='Пользователь',
-       on_delete=models.CASCADE,
+        User,
+        related_name='follower',
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
     )
 
 

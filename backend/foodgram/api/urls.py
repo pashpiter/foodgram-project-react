@@ -17,7 +17,7 @@ urlpatterns = [
         name='isfavorite'),
     path('recipes/<recipe_id>/shopping_cart',
          IsInShippingCartViewSet.as_view({
-            'post': 'create', 'delete': 'destroy'
+             'post': 'create', 'delete': 'destroy'
          }), name='shopping_cart'),
     path('recipes/download_shopping_cart',
          DownloadShippingCartViewSet.as_view({'get': 'list'}),
