@@ -145,5 +145,4 @@ class IsInShippingCart(models.Model):
         related_name='user_cart',
         verbose_name='Пользователь корзины',
         on_delete=models.CASCADE,
-
     )
