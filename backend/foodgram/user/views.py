@@ -1,4 +1,4 @@
-from django.contrib.auth.hashers import (check_password, make_password)
+from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import get_object_or_404
 from djoser.views import TokenDestroyView, UserViewSet
 from rest_framework import viewsets
@@ -75,8 +75,7 @@ class UserCreateGetPatchViewSet(UserViewSet):
         return Response('Пароль изменен', status=HTTP_200_OK)
 
     def get_queryset(self):
-        queryset = User.objects.all()
-        return queryset
+        return User.objects.all()
 
 
 class SubscribeViewSet(viewsets.ModelViewSet):

@@ -1,11 +1,10 @@
 from django.db.models import F
 from rest_framework import serializers
 
-
 from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.serializers import UserRegistrationSerializer
-from .utils import UpdateIngridientsInRecipe
+from .utils import updateingridientsinrecipe
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -87,7 +86,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         if ingridients:
             instance.ingridients.clear()
-            UpdateIngridientsInRecipe(instance, ingridients)
+            updateingridientsinrecipe(instance, ingridients)
 
         instance.save()
         return instance

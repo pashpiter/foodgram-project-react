@@ -154,7 +154,6 @@ class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
                 f'({ingridient.ingridient_in_recipe.measurement_unit}) - '
                 f'{ingridient.amount}\n'
             ))
-        response = FileResponse(
+        return FileResponse(
             file, as_attachment=True, filename='shopping_list.txt'
         )
-        return response

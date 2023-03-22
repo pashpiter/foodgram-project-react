@@ -1,7 +1,7 @@
 from recipes.models import Ingridient, IngridientInRecipe
 
 
-def UpdateIngridientsInRecipe(recipe, ingridients):
+def updateingridientsinrecipe(recipe, ingridients):
     for ingridient in ingridients:
         current_ingridient = Ingridient.objects.get(id=ingridient['id'])
         IngridientInRecipe.objects.create(
