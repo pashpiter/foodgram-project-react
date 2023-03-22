@@ -1,9 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-# from django.contrib.auth import get_user_model
+from django.db import models
 
-# User = get_user_model()
 
 class User(AbstractUser):
     USER_ROLE = 'user'
@@ -71,16 +69,17 @@ class User(AbstractUser):
     def __str__(self):
         return f'{self.username}'
 
+
 class Subscribe(models.Model):
-   author = models.ForeignKey(
+    author = models.ForeignKey(
        User,
        related_name='author',
        verbose_name='Автор рецепта',
        on_delete=models.CASCADE,
-   )
-   subscriber = models.ForeignKey(
+    )
+    subscriber = models.ForeignKey(
        User,
        related_name='subscriber',
        verbose_name='Сабскрайбер',
        on_delete=models.CASCADE,
-   )
+    )

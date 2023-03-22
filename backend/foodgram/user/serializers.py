@@ -1,10 +1,9 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from django.shortcuts import get_object_or_404
 
-
-from .models import User, Subscribe
+from .models import Subscribe, User
 from .validators import validate_new_password
+
 
 class GetTokenSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
@@ -16,12 +15,16 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(UserCreateSerializer):
-    password = serializers.CharField(style={"input_type": "password"}, write_only=True)
+    password = serializers.CharField(
+        style={"input_type": "password"}, write_only=True
+    )
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'is_subscribed')
+        fields = (
+            'id', 'username', 'email', 'first_name',
+            'last_name', 'password', 'is_subscribed')
 
     def get_is_subscribed(self, obj):
         author = Subscribe.objects.filter(author=obj)
@@ -47,7 +50,9 @@ class UserSetPasswoprdSerializer(UserSerializer):
 
 
 class IsSubscribedSeializer(serializers.ModelSerializer):
-    author = serializers.HiddenField(default=UserRegistrationSerializer(), required=False)
+    author = serializers.HiddenField(
+        default=UserRegistrationSerializer(), required=False
+    )
     subscriber = serializers.HiddenField(default=False)
 
     class Meta:
@@ -55,7 +60,8 @@ class IsSubscribedSeializer(serializers.ModelSerializer):
         fields = ('author', 'subscriber')
 
     def to_representation(self, instance):
-        data = super(IsSubscribedSeializer, self).to_representation(instance.author)
+        data = super(IsSubscribedSeializer, self).to_representation(
+            instance.author)
         data['id'] = instance.author.id
         data['username'] = instance.author.username
         data['email'] = instance.author.email

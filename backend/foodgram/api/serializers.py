@@ -1,7 +1,9 @@
-from rest_framework import serializers
 from django.db.models import F
+from rest_framework import serializers
 
-from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart, IngridientInRecipe
+
+from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
+                            IsInShippingCart, RecipeList, Tag)
 from user.serializers import UserRegistrationSerializer
 from .utils import UpdateIngridientsInRecipe
 
@@ -10,7 +12,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('id' ,'name', 'color', 'slug')
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngridientsInRecipeSerializer(serializers.ModelSerializer):
@@ -19,7 +21,9 @@ class IngridientsInRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngridientInRecipe
         fields = ('__all__')
-        read_only_fields = ('recipe', 'ingridient_in_recipe', 'measurement_unit')
+        read_only_fields = (
+            'recipe', 'ingridient_in_recipe', 'measurement_unit'
+        )
 
 
 class IngridientsSerializer(serializers.ModelSerializer):
@@ -48,14 +52,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         return obj.ingridients.values(
             'id', 'name', 'measurement_unit', amount=F('in_ingridient__amount')
         )
-    
+
     def validate(self, data):
         data.update({
             'ingridients': self.initial_data['ingridients'],
             'tags': self.initial_data['tags']
         })
         return data
-    
+
     def create(self, validated_data):
         ingridients = validated_data.pop('ingridients')
         tags = validated_data.pop('tags')
@@ -63,7 +67,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.add(*tags)
         for ingridient in ingridients:
             current_ingridient = Ingridient.objects.get(id=ingridient['id'])
-            recipe_ingridient = IngridientInRecipe.objects.create(
+            IngridientInRecipe.objects.create(
                 ingridient_in_recipe=current_ingridient, recipe=recipe,
                 amount=ingridient['amount']
             )
@@ -72,7 +76,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 through_defaults={'amount': ingridient['amount']}
             )
         return recipe
-    
+
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
         ingridients = validated_data.pop('ingridients')
@@ -87,7 +91,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-    
+
     def get_is_favorited(self, obj):
         fav_recipe = IsFavorited.objects.filter(fav_recipe=obj)
         if not fav_recipe:
@@ -101,7 +105,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             return False
         user_cart = self.context['request'].user
         return food_list.filter(user_cart=user_cart).exists()
-    
+
 
 class IsFavoriteSerializer(serializers.ModelSerializer):
 
@@ -112,15 +116,17 @@ class IsFavoriteSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         recipe = RecipeList.objects.get(id=instance.fav_recipe_id)
-        data = super(IsFavoriteSerializer, self).to_representation(instance.fav_recipe.id)
+        data = super(IsFavoriteSerializer, self).to_representation(
+            instance.fav_recipe.id)
         data['id'] = instance.pk
         data['name'] = recipe.name
         data['image'] = recipe.image
         data['cooking_time'] = recipe.cooking_time
         return data
-    
+
+
 class IsInShippingCartSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = IsInShippingCart
         fields = ('food_list', 'user_cart')
@@ -128,7 +134,8 @@ class IsInShippingCartSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         recipe = RecipeList.objects.get(id=instance.food_list_id)
-        data = super(IsInShippingCartSerializer, self).to_representation(instance.food_list.id)
+        data = super(IsInShippingCartSerializer, self).to_representation(
+            instance.food_list.id)
         data['id'] = instance.pk
         data['name'] = recipe.name
         data['image'] = recipe.image

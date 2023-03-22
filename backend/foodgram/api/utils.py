@@ -1,4 +1,5 @@
-from recipes.models import RecipeList, IngridientInRecipe, Ingridient
+from recipes.models import Ingridient, IngridientInRecipe
+
 
 def UpdateIngridientsInRecipe(recipe, ingridients):
     for ingridient in ingridients:
@@ -7,7 +8,7 @@ def UpdateIngridientsInRecipe(recipe, ingridients):
             ingridient_in_recipe=current_ingridient, recipe=recipe,
             amount=ingridient['amount']
         )
-    
+
     recipe.ingridients.add(
                 current_ingridient,
                 through_defaults={'amount': ingridient['amount']}

@@ -1,6 +1,5 @@
-from django.db import models
 from django.core.validators import MinValueValidator
-from django.contrib.auth import get_user_model
+from django.db import models
 
 from user.models import User
 
@@ -8,6 +7,7 @@ MEASURMENT_UNI_CHOICES = (
     ('g', 'г'), ('kg', 'кг'), ('ml', 'мл'), ('l', 'л'), ('piece', 'штука'),
     ('random', 'по вкусу')
 )
+
 
 class Tag(models.Model):
     name = models.CharField(
@@ -36,6 +36,7 @@ class Tag(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class Ingridient(models.Model):
     name = models.CharField(
         max_length=200,
@@ -52,6 +53,7 @@ class Ingridient(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
 
 class RecipeList(models.Model):
     tags = models.ManyToManyField(
@@ -98,6 +100,7 @@ class RecipeList(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class IngridientInRecipe(models.Model):
     ingridient_in_recipe = models.ForeignKey(
         Ingridient,
@@ -119,20 +122,22 @@ class IngridientInRecipe(models.Model):
         ]
     )
 
+
 class IsFavorited(models.Model):
     fav_recipe = models.ForeignKey(
        RecipeList,
        related_name='fav_recipe',
        verbose_name='Рецепт',
        on_delete=models.CASCADE,
-   )
+    )
     follower = models.ForeignKey(
        User,
        related_name='follower',
        verbose_name='Пользователь',
        on_delete=models.CASCADE,
-   )
-    
+    )
+
+
 class IsInShippingCart(models.Model):
     food_list = models.ForeignKey(
         RecipeList,
