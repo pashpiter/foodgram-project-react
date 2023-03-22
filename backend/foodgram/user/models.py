@@ -36,9 +36,20 @@ class User(AbstractUser):
         help_text='Например: Теркин',
         verbose_name='Фамилия'
     )
-    # @property
-    # def is_subscribed(self):
-    #     return self.username in Subscribe.
+    role = models.CharField(
+        'Роль',
+        max_length=16,
+        choices=CHOICES_ROLE,
+        default=USER_ROLE,
+        blank=True,
+        null=True
+    )
+    password = models.CharField(
+        'Пароль',
+        max_length=255,
+        blank=True,
+        null=True
+    )
 
     @property
     def is_admin(self):
@@ -59,3 +70,17 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.username}'
+
+class Subscribe(models.Model):
+   author = models.ForeignKey(
+       User,
+       related_name='author',
+       verbose_name='Автор рецепта',
+       on_delete=models.CASCADE,
+   )
+   subscriber = models.ForeignKey(
+       User,
+       related_name='subscriber',
+       verbose_name='Сабскрайбер',
+       on_delete=models.CASCADE,
+   )
