@@ -102,5 +102,35 @@ class RecipeSerializer(serializers.ModelSerializer):
         user_cart = self.context['request'].user
         return food_list.filter(user_cart=user_cart).exists()
     
+
+class IsFavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = IsFavorited
+        fields = ('id', 'fav_recipe', 'follower')
+        read_only_fields = ('fav_recipe', 'follower')
+
+    def to_representation(self, instance):
+        recipe = RecipeList.objects.get(id=instance.fav_recipe_id)
+        data = super(IsFavoriteSerializer, self).to_representation(instance.fav_recipe.id)
+        data['id'] = instance.pk
+        data['name'] = recipe.name
+        data['image'] = recipe.image
+        data['cooking_time'] = recipe.cooking_time
+        return data
     
+class IsInShippingCartSerializer(serializers.ModelSerializer):
     
+    class Meta:
+        model = IsInShippingCart
+        fields = ('food_list', 'user_cart')
+        read_only_fields = ('food_list', 'user_cart')
+
+    def to_representation(self, instance):
+        recipe = RecipeList.objects.get(id=instance.food_list_id)
+        data = super(IsInShippingCartSerializer, self).to_representation(instance.food_list.id)
+        data['id'] = instance.pk
+        data['name'] = recipe.name
+        data['image'] = recipe.image
+        data['cooking_time'] = recipe.cooking_time
+        return data
