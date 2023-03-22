@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TagViewSet, IngridientViewSet, RecipeViewSet, FavoriteViewSet, IsInShippingCartViewSet
+from .views import TagViewSet, IngridientViewSet, RecipeViewSet, FavoriteViewSet, IsInShippingCartViewSet, DownloadShippingCartViewSet
 
 
 router = DefaultRouter()
@@ -17,5 +17,6 @@ urlpatterns = [
          IsInShippingCartViewSet.as_view({
             'post': 'create', 'delete': 'destroy'
          })),
+    path('recipes/download_shopping_cart', DownloadShippingCartViewSet.as_view({'get': 'list'}), name='download_shopping_cart'),
     path('', include(router.urls))
 ]

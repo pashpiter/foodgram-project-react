@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 
-from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart
+from django.http import HttpResponse
+from recipes.models import Tag, Ingridient, RecipeList, IsFavorited, IsInShippingCart, IngridientInRecipe
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_204_NO_CONTENT, HTTP_201_CREATED
@@ -97,7 +98,31 @@ class IsInShippingCartViewSet(CreateDestroyViewSet):
     
 class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = IsInShippingCart
-    permission_classes = IsAuthor
+    permission_classes = [IsAuthor,]
 
     def list(self, request, *args, **kwargs):
-        pass
+        recipes = IsInShippingCart.objects.filter(user_cart_id=request.user.id)
+        end_ingridients = {}
+        for recipe in recipes:
+            ingridients = IngridientInRecipe.objects.filter(recipe_id=recipe.food_list_id)
+            for ingridient in ingridients:
+                if not ingridient.ingridient_in_recipe.id in end_ingridients:
+                    end_ingridients[ingridient.ingridient_in_recipe.id] = ingridient
+                else:
+                    end_ingridients[ingridient.ingridient_in_recipe.id].amount += ingridient.amount
+                    
+            # if not ingridient.ingridient_in_recipe.name in end_ingridients:
+            #     end_ingridients.append([ingridient.ingridient_in_recipe.name, ingridient.ingridient_in_recipe.measurement_unit, ingridient.amount])
+            # end_ingridients
+        file = open("shopping_list.txt", "w+")
+        for ingridient in end_ingridients.values():
+            print(ingridient.ingridient_in_recipe.name ,ingridient.amount)
+            file.write(''.join(
+                f'{ingridient.ingridient_in_recipe.name} '
+                f'({ingridient.ingridient_in_recipe.measurement_unit}) - '
+                f'{ingridient.amount}\n'
+            ))
+        response = HttpResponse(file, content_type='text/plain')
+        # response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        file.close()
+        return response
