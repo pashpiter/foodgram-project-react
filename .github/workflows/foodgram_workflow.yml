@@ -41,7 +41,13 @@ jobs:
             with:
               file: backend/foodgram/Dockerfile
               push: true
-              tags: pashpiter/foodgram:latest
+              tags: pashpiter/foodgram_back:latest
+          - name: Push to Docker Hub
+            uses: docker/build-push-action@v2 
+            with:
+              file: frontend/Dockerfile
+              push: true
+              tags: pashpiter/foodgram_front:latest
 
   deploy:
       runs-on: ubuntu-latest
