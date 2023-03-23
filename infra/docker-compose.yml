@@ -9,20 +9,17 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: pashpiter/foodgram_front:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - db
 
   backend:
-    build:
-      context: ../backend/foodgram
+    image: pashpiter/foodgram_back:latest
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - static_value:/app_back/static/
+      - media_value:/app_back/media/
     depends_on:
       - frontend
     env_file:
