@@ -37,7 +37,7 @@ class IngridientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shipping_cart = serializers.SerializerMethodField()
-    ingridients = serializers.SerializerMethodField()
+    ingredients = serializers.SerializerMethodField()
     author = UserRegistrationSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     image = Base64ImageField(required=True)
@@ -45,7 +45,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeList
         fields = (
-            'id', 'tags', 'author', 'ingridients', 'is_favorited',
+            'id', 'tags', 'author', 'ingredients', 'is_favorited',
             'is_in_shipping_cart', 'name', 'image', 'text', 'cooking_time')
         read_only_fields = ('author', 'is_favorited', 'is_in_shipping_cart')
 
@@ -62,7 +62,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        ingridients = validated_data.pop('ingredients')
+        ingridients = validated_data.pop('ingridients')
         tags = validated_data.pop('tags')
         recipe = RecipeList.objects.create(**validated_data)
         recipe.tags.add(*tags)
