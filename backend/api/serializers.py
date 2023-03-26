@@ -56,13 +56,13 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         data.update({
-            'ingridients': self.initial_data['ingridients'],
+            'ingridients': self.initial_data['ingredients'],
             'tags': self.initial_data['tags']
         })
         return data
 
     def create(self, validated_data):
-        ingridients = validated_data.pop('ingridients')
+        ingridients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = RecipeList.objects.create(**validated_data)
         recipe.tags.add(*tags)
@@ -80,7 +80,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
-        ingridients = validated_data.pop('ingridients')
+        ingridients = validated_data.pop('ingredients')
 
         if tags:
             instance.tags.clear()
