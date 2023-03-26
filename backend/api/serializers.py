@@ -49,7 +49,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_in_shipping_cart', 'name', 'image', 'text', 'cooking_time')
         read_only_fields = ('author', 'is_favorited', 'is_in_shipping_cart')
 
-    def get_ingridients(self, obj):
+    def get_ingredients(self, obj):
         return obj.ingridients.values(
             'id', 'name', 'measurement_unit', amount=F('in_ingridient__amount')
         )
