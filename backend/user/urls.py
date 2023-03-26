@@ -1,8 +1,8 @@
 from django.urls import include, path
-from djoser.views import TokenDestroyView
+# from djoser.views import TokenDestroyView
 from rest_framework.routers import DefaultRouter
 
-from .views import (APIDestroyTokenView, APIGetTokenView, GetSubscriptionsView,
+from .views import (GetSubscriptionsView,
                     SubscribeViewSet, UserCreateGetPatchViewSet)
 
 router = DefaultRouter()
@@ -19,13 +19,6 @@ urlpatterns = [
         GetSubscriptionsView.as_view({'get': 'list'}),
         name='getsubs'
     ),
+    path('auth/', include('djoser.urls.authtoken')),
     path('', include(router.urls)),
-    path('auth/token/login', APIGetTokenView.as_view(), name='get_token'),
-    path(
-        'auth/token/logout', TokenDestroyView.as_view(), name='token_destroy'
-    ),
-    path(
-        'auth/token/logout',
-        APIDestroyTokenView.as_view(),
-        name='token_destroy'),
 ]

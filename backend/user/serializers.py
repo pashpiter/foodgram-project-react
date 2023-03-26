@@ -5,26 +5,35 @@ from .models import Subscribe, User
 from .validators import validate_new_password
 
 
-class GetTokenSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('email', 'password')
-
-
 class UserRegistrationSerializer(UserCreateSerializer):
     password = serializers.CharField(
         style={"input_type": "password"}, write_only=True
     )
+
+    class Meta:
+        model = User
+        fields = (
+            'id', 'username', 'email', 'first_name',
+            'last_name', 'password')
+
+    def validate(self, data):
+        if not data.get('username'):
+            raise ValueError('Необходимо ввести username!')
+        if not data.get('first_name'):
+            raise ValueError('Необходимо ввести first_name!')
+        if not data.get('last_name'):
+            raise ValueError('Необходимо ввести last_name!')
+        return data
+
+
+class UserGetSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
             'id', 'username', 'email', 'first_name',
-            'last_name', 'password', 'is_subscribed')
+            'last_name', 'is_subscribed')
 
     def get_is_subscribed(self, obj):
         author = Subscribe.objects.filter(author=obj)
@@ -32,21 +41,6 @@ class UserRegistrationSerializer(UserCreateSerializer):
             return False
         sub = self.context['request'].user
         return author.filter(subscriber=sub).exists()
-
-
-class UserSetPasswoprdSerializer(UserSerializer):
-    new_password = serializers.CharField(required=True)
-    current_password = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('new_password', 'current_password')
-
-    def validate_new_password(self, value):
-        error = validate_new_password(value)
-        if error:
-            raise serializers.ValidationError(*error)
-        return value
 
 
 class IsSubscribedSeializer(serializers.ModelSerializer):

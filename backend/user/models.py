@@ -5,12 +5,10 @@ from django.db import models
 
 class User(AbstractUser):
     USER_ROLE = 'user'
-    MODERATOR_ROLE = 'moderator'
     ADMIN_ROLE = 'admin'
 
     CHOICES_ROLE = (
         (USER_ROLE, 'user'),
-        (MODERATOR_ROLE, 'moderator'),
         (ADMIN_ROLE, 'admin')
     )
 
