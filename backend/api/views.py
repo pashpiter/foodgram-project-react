@@ -29,8 +29,8 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingridient.objects.all()
     serializer_class = IngridientsSerializer
     pagination_class = None
-    filter_backends = (SearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
