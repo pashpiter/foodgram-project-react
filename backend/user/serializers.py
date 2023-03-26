@@ -2,7 +2,6 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
 from .models import Subscribe, User
-from .validators import validate_new_password
 
 
 class UserRegistrationSerializer(UserCreateSerializer):

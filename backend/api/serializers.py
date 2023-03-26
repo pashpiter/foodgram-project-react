@@ -1,5 +1,6 @@
 from django.db.models import F
 from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
 
 from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
@@ -39,6 +40,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingridients = serializers.SerializerMethodField()
     author = UserRegistrationSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+    image = Base64ImageField(required=True)
 
     class Meta:
         model = RecipeList

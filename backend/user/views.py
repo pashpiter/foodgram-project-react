@@ -1,12 +1,10 @@
-from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import get_object_or_404
-from djoser.views import TokenDestroyView, UserViewSet
+from djoser.views import UserViewSet
 from rest_framework import viewsets
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
+from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
+                                   HTTP_400_BAD_REQUEST)
 
 from .models import Subscribe, User
 from .serializers import (IsSubscribedSeializer,
@@ -21,9 +19,6 @@ class UserCreateGetPatchViewSet(UserViewSet):
     def perform_create(self, serializer):
         if 'role' not in self.request.data:
             serializer.save(role='user')
-
-    def get_queryset(self):
-        return User.objects.all()
 
 
 class SubscribeViewSet(viewsets.ModelViewSet):
