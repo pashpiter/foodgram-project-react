@@ -1,6 +1,7 @@
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
@@ -10,6 +11,7 @@ from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.models import User
 
+from .filters import RecipeFilter
 from .mixins import CreateDestroyViewSet
 from .permissions import IsAuthor, IsAuthorOrAdminOrReadOnly
 from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
@@ -27,13 +29,15 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingridient.objects.all()
     serializer_class = IngridientsSerializer
     pagination_class = None
+    filter_backends = (SearchFilter,)
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('tags',)
+    filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
