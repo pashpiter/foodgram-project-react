@@ -20,11 +20,13 @@ from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
 
 
 class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingridient.objects.all()
     serializer_class = IngridientsSerializer
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
