@@ -7,7 +7,7 @@ from .views import (DownloadShippingCartViewSet, FavoriteViewSet,
 
 router = DefaultRouter()
 router.register('tags', TagViewSet, basename='tags')
-router.register('ingridients', IngridientViewSet, basename='ingridients')
+router.register('ingredients', IngridientViewSet, basename='ingredients')
 router.register('recipes', RecipeViewSet, basename='recipes')
 
 urlpatterns = [
