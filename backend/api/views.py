@@ -1,7 +1,6 @@
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
@@ -29,8 +28,18 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingridient.objects.all()
     serializer_class = IngridientsSerializer
     pagination_class = None
-    filter_backends = (SearchFilter,)
-    filterset_fields = ('^name',)
+
+    def get_queryset(self):
+        name = self.request.query_params['name']
+        name = name.lower()
+        starts_with_queryset = list(
+            self.queryset.filter(name__istartswith=name)
+        )
+        cont_queryset = self.queryset.filter(name__icontains=name)
+        starts_with_queryset.extend(
+            [ing for ing in cont_queryset if ing not in starts_with_queryset]
+        )
+        return starts_with_queryset
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -39,6 +48,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_sets = ('tags__slug',)
     # filterset_class = RecipeFilter
+
+    def get_queryset(self):
+        queryset = self.queryset
+        tags = self.request.query_params.get('tags')
+        if tags:
+            queryset = queryset.filter(tags__slug__in=tags).distinct()
+        author = self.request.query_params.get('author')
+        if author:
+            queryset = queryset.filter(author__username=author)
+        if not self.request._user.is_authenticated:
+            return queryset
+
+        is_favorited = self.request.query_params.get('is_favorited')
+        if is_favorited:
+            queryset = queryset.filter(fav_recipe__user=self.request.user)
+        is_in_cart = self.request.query_params.get('is_in_cart')
+        if is_in_cart:
+            queryset = queryset.filter(food_list__user=self.request.user)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
