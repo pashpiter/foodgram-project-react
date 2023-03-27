@@ -37,7 +37,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_class = RecipeFilter
+    filter_sets = ('tags__slug',)
+    # filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
