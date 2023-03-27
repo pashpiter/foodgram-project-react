@@ -61,10 +61,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return queryset
 
         if self.request.query_params.get('is_favorited'):
-            queryset = queryset.filter(fav_recipe__user=self.request.user)
+            queryset = queryset.filter(follower__user=self.request.user)
         if not self.request.query_params.get('is_in_cart'):
             return queryset
-        return queryset.filter(food_list__user=self.request.user)
+        return queryset.filter(user_cart__user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

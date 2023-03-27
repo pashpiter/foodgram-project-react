@@ -72,9 +72,8 @@ class RecipeList(models.Model):
         verbose_name='Название рецепта',
         unique=True
     )
-    image = models.URLField(
-        help_text='Например: http://foodgram.example.org/media/recipes/'
-        'images/image.jpeg',
+    image = models.ImageField(
+        help_text='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB',
         verbose_name='Ссылка на картинку готового блюда на сайте'
     )
     text = models.TextField(
