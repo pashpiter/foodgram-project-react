@@ -12,10 +12,10 @@ router.register('recipes', RecipeViewSet, basename='recipes')
 
 urlpatterns = [
     path(
-        'recipes/<recipe_id>/favorite',
+        'recipes/<recipe_id>/favorite/',
         FavoriteViewSet.as_view({'post': 'create', 'delete': 'destroy'}),
         name='isfavorite'),
-    path('recipes/<recipe_id>/shopping_cart',
+    path('recipes/<recipe_id>/shopping_cart/',
          IsInShippingCartViewSet.as_view({
              'post': 'create', 'delete': 'destroy'
          }), name='shopping_cart'),
