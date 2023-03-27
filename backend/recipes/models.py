@@ -3,11 +3,6 @@ from django.db import models
 
 from user.models import User
 
-MEASURMENT_UNI_CHOICES = (
-    ('g', 'г'), ('kg', 'кг'), ('ml', 'мл'), ('l', 'л'), ('piece', 'штука'),
-    ('random', 'по вкусу')
-)
-
 
 class Tag(models.Model):
     name = models.CharField(
@@ -48,7 +43,6 @@ class Ingridient(models.Model):
         max_length=200,
         help_text='Например: кг',
         verbose_name='Еденицы измерения',
-        choices=MEASURMENT_UNI_CHOICES
     )
 
     def __str__(self):
