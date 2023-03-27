@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from recipes.models import Ingridient
 
 
-class InputIngredientsCommand(BaseCommand):
+class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with open('data/ingredients.json', encoding='utf-8') as file:
