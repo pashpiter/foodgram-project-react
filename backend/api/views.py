@@ -1,7 +1,7 @@
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-# from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
@@ -29,8 +29,8 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingridient.objects.all()
     serializer_class = IngridientsSerializer
     pagination_class = None
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name',)
+    filter_backends = (SearchFilter,)
+    filterset_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
