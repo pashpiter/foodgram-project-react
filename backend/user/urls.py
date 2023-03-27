@@ -9,12 +9,12 @@ router.register('users', UserCreateGetPatchViewSet, basename='users')
 
 urlpatterns = [
     path(
-        'users/<author_id>/subscribe',
+        'users/<author_id>/subscribe/',
         SubscribeViewSet.as_view({'post': 'create', 'delete': 'destroy'}),
         name='subscribe'
     ),
     path(
-        'users/subscriptions',
+        'users/subscriptions/',
         GetSubscriptionsView.as_view({'get': 'list'}),
         name='getsubs'
     ),

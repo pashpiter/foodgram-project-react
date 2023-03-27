@@ -72,9 +72,8 @@ class RecipeList(models.Model):
         verbose_name='Название рецепта',
         unique=True
     )
-    image = models.ImageField(
+    image = models.TextField(
         verbose_name='Изображение блюда',
-        upload_to='recipe_images/',
     )
     text = models.TextField(
         help_text='Описание рецепта',
