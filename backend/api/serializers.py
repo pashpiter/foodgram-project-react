@@ -40,7 +40,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     author = UserRegistrationSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    image = Base64ImageField(required=True)
+    image = Base64ImageField()
 
     class Meta:
         model = RecipeList
@@ -106,6 +106,11 @@ class RecipeSerializer(serializers.ModelSerializer):
             return False
         user_cart = self.context['request'].user
         return food_list.filter(user_cart=user_cart).exists()
+
+    def to_internal_value(self, data):
+        ret = super().to_internal_value(data)
+        ret['image'] = data['image']
+        return ret
 
 
 class IsFavoriteSerializer(serializers.ModelSerializer):

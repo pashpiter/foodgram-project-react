@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from user.models import Subscribe, User
 
-from .models import Ingridient, IngridientInRecipe, RecipeList, Tag
+from .models import (Ingridient, IngridientInRecipe, IsFavorited,
+                     IsInShippingCart, RecipeList, Tag)
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -54,9 +55,23 @@ class IngridientInRecipeAdmin(admin.ModelAdmin):
     )
 
 
+class IsIsFavoritedAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk', 'fav_recipe', 'follower'
+    )
+
+
+class IsInShippingCartAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk', 'food_list', 'user_cart'
+    )
+
+
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingridient, IngridientAdmin)
 admin.site.register(RecipeList, RecipeListAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Subscribe, SubscribeAdmin)
 admin.site.register(IngridientInRecipe, IngridientInRecipeAdmin)
+admin.site.register(IsFavorited, IsIsFavoritedAdmin)
+admin.site.register(IsInShippingCart, IsInShippingCartAdmin)
