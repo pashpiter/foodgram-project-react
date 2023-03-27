@@ -80,7 +80,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
-        ingridients = validated_data.pop('ingredients')
+        ingridients = validated_data.pop('ingridients')
 
         if tags:
             instance.tags.clear()

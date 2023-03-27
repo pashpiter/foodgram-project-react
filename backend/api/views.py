@@ -1,5 +1,4 @@
 from django.http import FileResponse
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -45,9 +44,6 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filter_sets = ('tags__slug',)
-    # filterset_class = RecipeFilter
 
     def get_queryset(self):
         queryset = self.queryset
