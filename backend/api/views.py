@@ -11,7 +11,7 @@ from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.models import User
 
-from .filters import RecipeFilter
+# from .filters import RecipeFilter
 from .mixins import CreateDestroyViewSet
 from .permissions import IsAuthor, IsAuthorOrAdminOrReadOnly
 from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
