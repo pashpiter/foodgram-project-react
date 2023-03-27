@@ -73,7 +73,7 @@ class RecipeList(models.Model):
         unique=True
     )
     image = models.CharField(
-        max_length=2000,
+        max_length=32000,
         help_text='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB',
         verbose_name='Ссылка на картинку готового блюда на сайте'
     )
