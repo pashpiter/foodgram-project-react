@@ -10,7 +10,7 @@ from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
 from user.models import User
 
 from .mixins import CreateDestroyViewSet
-from .permissions import IsAuthor, IsAuthorOrAdminOrReadOnly
+from .permissions import IsAuthorOrAdminOrReadOnly
 from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
                           IsInShippingCartSerializer, RecipeSerializer,
                           TagSerializer)
@@ -158,14 +158,13 @@ class IsInShippingCartViewSet(CreateDestroyViewSet):
 
 class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = IsInShippingCart
-    permission_classes = [IsAuthor, ]
 
     def list(self, request, *args, **kwargs):
         recipes = IsInShippingCart.objects.filter(user_cart_id=request.user.id)
         end_ingridients = {}
         for recipe in recipes:
             ingridients = IngridientInRecipe.objects.filter(
-                recipe_id=recipe.food_list_id
+                recipe=recipe.food_list
             )
             for ingridient in ingridients:
                 if ingridient.ingridient_in_recipe.id not in end_ingridients:
@@ -175,13 +174,17 @@ class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
                     end_ingridients[
                         ingridient.ingridient_in_recipe.id
                     ].amount += ingridient.amount
-        file = open("shopping_list.txt", "w+")
+        # file = open('shopping_list.txt', 'w+')
+        shopping_list = ''
         for ingridient in end_ingridients.values():
-            file.write(''.join(
+            # file.write('111')
+            item = (''.join(
                 f'{ingridient.ingridient_in_recipe.name} '
                 f'({ingridient.ingridient_in_recipe.measurement_unit}) - '
                 f'{ingridient.amount}\n'
             ))
+            shopping_list += item
+        # file.close()
         return FileResponse(
-            file, as_attachment=True, filename='shopping_list.txt'
+            shopping_list, as_attachment=True, filename='shopping_list.txt'
         )
