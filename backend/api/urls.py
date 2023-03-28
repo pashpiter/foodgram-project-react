@@ -19,7 +19,7 @@ urlpatterns = [
          IsInShippingCartViewSet.as_view({
              'post': 'create', 'delete': 'destroy'
          }), name='shopping_cart'),
-    path('recipes/download_shopping_cart',
+    path('recipes/download_shopping_cart/',
          DownloadShippingCartViewSet.as_view({'get': 'list'}),
          name='download_shopping_cart'),
     path('', include(router.urls))
