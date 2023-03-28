@@ -9,7 +9,6 @@ from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.models import User
 
-# from .filters import RecipeFilter
 from .mixins import CreateDestroyViewSet
 from .permissions import IsAuthor, IsAuthorOrAdminOrReadOnly
 from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
@@ -49,7 +48,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         queryset = self.queryset
         tags = self.request.query_params.get('tags')
         if tags:
-            queryset = queryset.filter(tags__slug__in=tags).distinct()
+            queryset = queryset.filter(tags__slug=tags).distinct()
         author = self.request.query_params.get('author')
         if author:
             queryset = queryset.filter(author__username=author)

@@ -107,14 +107,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         user_cart = self.context['request'].user
         return food_list.filter(user_cart=user_cart).exists()
 
-    # def to_internal_value(self, data):
-    #     ret = super().to_internal_value(data)
-    #     ret['image'] = data['image']
-    #     return ret
-
-    # def to_representation(self, instance):
-    #     return super().to_representation(instance)
-
 
 class IsFavoriteSerializer(serializers.ModelSerializer):
 
