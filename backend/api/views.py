@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from rest_framework import viewsets
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
+from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
@@ -71,7 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method == 'GET':
-            self.permission_classes = [AllowAny, ]
+            self.permission_classes = [IsAuthenticatedOrReadOnly, ]
         elif self.request.method == 'POST':
             self.permission_classes = [IsAuthenticated, ]
         elif self.request.method == 'PATCH':
