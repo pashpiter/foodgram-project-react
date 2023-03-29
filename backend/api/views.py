@@ -55,7 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(tags__slug=tags).distinct()
         author = self.request.query_params.get('author')
         if author:
-            queryset = queryset.filter(author__username=author)
+            queryset = queryset.filter(author__id=author)
         if not self.request._user.is_authenticated:
             return queryset
 
