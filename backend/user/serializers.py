@@ -1,6 +1,8 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
+from recipes.models import RecipeList
+
 from .models import Subscribe, User
 
 
@@ -56,6 +58,7 @@ class IsSubscribedSeializer(serializers.ModelSerializer):
         fields = ('author', 'subscriber')
 
     def to_representation(self, instance):
+        recipes = RecipeList.objects.filter(author=instance.subscriber)
         data = super(IsSubscribedSeializer, self).to_representation(
             instance.author)
         data['id'] = instance.author.id
@@ -64,4 +67,6 @@ class IsSubscribedSeializer(serializers.ModelSerializer):
         data['first_name'] = instance.author.first_name
         data['last_name'] = instance.author.last_name
         data['is_subscribed'] = True
+        data['recipes'] = recipes.values('id', 'name', 'image', 'cooking_time')
+        data['recipes_count'] = recipes.count()
         return data
