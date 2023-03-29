@@ -1,8 +1,8 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (GetSubscriptionsView,
-                    SubscribeViewSet, UserCreateGetPatchViewSet)
+from .views import (GetSubscriptionsView, SubscribeViewSet,
+                    UserCreateGetPatchViewSet)
 
 router = DefaultRouter()
 router.register('users', UserCreateGetPatchViewSet, basename='users')

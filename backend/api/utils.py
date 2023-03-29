@@ -2,6 +2,7 @@ from recipes.models import Ingridient, IngridientInRecipe
 
 
 def updateingridientsinrecipe(recipe, ingridients):
+    """Изменение ингредиентов в рецепте"""
     for ingridient in ingridients:
         current_ingridient = Ingridient.objects.get(id=ingridient['id'])
         IngridientInRecipe.objects.create(

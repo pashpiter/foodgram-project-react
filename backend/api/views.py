@@ -1,4 +1,4 @@
-from django.http import FileResponse
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -17,12 +17,14 @@ from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet для тегов"""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
 
 
 class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet для ингредиентов"""
     queryset = Ingridient.objects.all()
     serializer_class = IngridientsSerializer
     pagination_class = None
@@ -41,6 +43,7 @@ class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """ViewSet для рецептов"""
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
 
@@ -79,6 +82,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class FavoriteViewSet(CreateDestroyViewSet):
+    """ViewSet для избранного"""
     queryset = IsFavorited.objects.all()
     serializer_class = IsFavoriteSerializer
 
@@ -118,6 +122,7 @@ class FavoriteViewSet(CreateDestroyViewSet):
 
 
 class IsInShippingCartViewSet(CreateDestroyViewSet):
+    """ViewSet для корзины"""
     queryset = IsInShippingCart
     serializer_class = IsInShippingCartSerializer
 
@@ -157,6 +162,7 @@ class IsInShippingCartViewSet(CreateDestroyViewSet):
 
 
 class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet для загрузки ингредиентов"""
     queryset = IsInShippingCart
 
     def list(self, request, *args, **kwargs):
@@ -174,17 +180,14 @@ class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
                     end_ingridients[
                         ingridient.ingridient_in_recipe.id
                     ].amount += ingridient.amount
-        # file = open('shopping_list.txt', 'w+')
         shopping_list = ''
         for ingridient in end_ingridients.values():
-            # file.write('111')
             item = (''.join(
                 f'{ingridient.ingridient_in_recipe.name} '
                 f'({ingridient.ingridient_in_recipe.measurement_unit}) - '
                 f'{ingridient.amount}\n'
             ))
             shopping_list += item
-        # file.close()
-        return FileResponse(
-            shopping_list, as_attachment=True, filename='shopping_list.txt'
+        return HttpResponse(
+            shopping_list, content_type='text/plain;charset=UTF-8'
         )

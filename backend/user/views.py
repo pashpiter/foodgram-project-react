@@ -7,11 +7,11 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 
 from .models import Subscribe, User
-from .serializers import (IsSubscribedSeializer,
-                          UserRegistrationSerializer)
+from .serializers import IsSubscribedSeializer, UserRegistrationSerializer
 
 
 class UserCreateGetPatchViewSet(UserViewSet):
+    """ViewSet для создания User"""
     serializer_class = UserRegistrationSerializer
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -22,6 +22,7 @@ class UserCreateGetPatchViewSet(UserViewSet):
 
 
 class SubscribeViewSet(viewsets.ModelViewSet):
+    """ViewSet для создания подписок"""
     queryset = Subscribe.objects.all()
     serializer_class = IsSubscribedSeializer
     http_method_names = ['post', 'delete']
@@ -65,5 +66,6 @@ class SubscribeViewSet(viewsets.ModelViewSet):
 
 
 class GetSubscriptionsView(viewsets.ReadOnlyModelViewSet):
+    """ViewSet для получения подписок"""
     queryset = Subscribe.objects.all()
     serializer_class = IsSubscribedSeializer

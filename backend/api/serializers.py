@@ -1,14 +1,17 @@
 from django.db.models import F
-from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+
 
 from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.serializers import UserRegistrationSerializer
+
 from .utils import updateingridientsinrecipe
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """Сериалайзер для тегов"""
 
     class Meta:
         model = Tag
@@ -16,6 +19,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngridientsInRecipeSerializer(serializers.ModelSerializer):
+    """Сериалайзер для добавления ингредиентов в рецепт"""
     id = serializers.IntegerField()
 
     class Meta:
@@ -27,6 +31,7 @@ class IngridientsInRecipeSerializer(serializers.ModelSerializer):
 
 
 class IngridientsSerializer(serializers.ModelSerializer):
+    """Сериалайзер для ингредиентов"""
 
     class Meta:
         model = Ingridient
@@ -35,6 +40,7 @@ class IngridientsSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    """Сериалайзер для рецептов"""
     is_favorited = serializers.SerializerMethodField()
     is_in_shipping_cart = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
@@ -109,6 +115,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class IsFavoriteSerializer(serializers.ModelSerializer):
+    """Сериалайзер для избранного"""
 
     class Meta:
         model = IsFavorited
@@ -127,6 +134,7 @@ class IsFavoriteSerializer(serializers.ModelSerializer):
 
 
 class IsInShippingCartSerializer(serializers.ModelSerializer):
+    """Сериалайзер для корзины"""
 
     class Meta:
         model = IsInShippingCart

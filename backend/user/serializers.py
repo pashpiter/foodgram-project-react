@@ -5,6 +5,7 @@ from .models import Subscribe, User
 
 
 class UserRegistrationSerializer(UserCreateSerializer):
+    """Сериализатор для регистрации User"""
     password = serializers.CharField(
         style={"input_type": "password"}, write_only=True
     )
@@ -26,6 +27,7 @@ class UserRegistrationSerializer(UserCreateSerializer):
 
 
 class UserGetSerializer(UserSerializer):
+    """Сериализатор для получения объекта User"""
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -43,6 +45,7 @@ class UserGetSerializer(UserSerializer):
 
 
 class IsSubscribedSeializer(serializers.ModelSerializer):
+    """Сериализатор для подписок"""
     author = serializers.HiddenField(
         default=UserRegistrationSerializer(), required=False
     )
