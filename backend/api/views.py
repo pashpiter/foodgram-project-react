@@ -47,7 +47,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов"""
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = IsAuthenticatedOrReadOnly
 
     def get_queryset(self):
         queryset = self.queryset
