@@ -100,6 +100,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def get_is_favorited(self, obj):
+        if self.context['request'].user.is_anonymous:
+            return False
         fav_recipe = IsFavorited.objects.filter(fav_recipe=obj)
         if not fav_recipe:
             return False
@@ -107,6 +109,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         return fav_recipe.filter(follower=follower).exists()
 
     def get_is_in_shipping_cart(self, obj):
+        if self.context['request'].user.is_anonymous:
+            return False
         food_list = IsInShippingCart.objects.filter(food_list=obj)
         if not food_list:
             return False
