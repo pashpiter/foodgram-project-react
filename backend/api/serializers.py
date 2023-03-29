@@ -42,7 +42,7 @@ class IngridientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериалайзер для рецептов"""
     is_favorited = serializers.SerializerMethodField()
-    is_in_shipping_cart = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
     author = UserRegistrationSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
@@ -52,8 +52,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = RecipeList
         fields = (
             'id', 'tags', 'author', 'ingredients', 'is_favorited',
-            'is_in_shipping_cart', 'name', 'image', 'text', 'cooking_time')
-        read_only_fields = ('author', 'is_favorited', 'is_in_shipping_cart')
+            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time')
+        read_only_fields = ('author', 'is_favorited', 'is_in_shopping_cart')
 
     def get_ingredients(self, obj):
         return obj.ingridients.values(
@@ -108,7 +108,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         follower = self.context['request'].user
         return fav_recipe.filter(follower=follower).exists()
 
-    def get_is_in_shipping_cart(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         if self.context['request'].user.is_anonymous:
             return False
         food_list = IsInShippingCart.objects.filter(food_list=obj)

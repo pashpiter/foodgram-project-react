@@ -58,7 +58,7 @@ class IsSubscribedSeializer(serializers.ModelSerializer):
         fields = ('author', 'subscriber')
 
     def to_representation(self, instance):
-        recipes = RecipeList.objects.filter(author=instance.subscriber)
+        recipes = RecipeList.objects.filter(author=instance.author)
         data = super(IsSubscribedSeializer, self).to_representation(
             instance.author)
         data['id'] = instance.author.id
