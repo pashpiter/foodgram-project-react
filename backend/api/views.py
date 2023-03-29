@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
@@ -46,6 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов"""
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
+    permission_classes = IsAuthenticatedOrReadOnly
 
     def get_queryset(self):
         queryset = self.queryset
