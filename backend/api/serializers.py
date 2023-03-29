@@ -132,7 +132,7 @@ class IsFavoriteSerializer(serializers.ModelSerializer):
             instance.fav_recipe.id)
         data['id'] = instance.pk
         data['name'] = recipe.name
-        data['image'] = recipe.image
+        data['image'] = recipe.image.url
         data['cooking_time'] = recipe.cooking_time
         return data
 
@@ -151,6 +151,6 @@ class IsInShippingCartSerializer(serializers.ModelSerializer):
             instance.food_list.id)
         data['id'] = instance.pk
         data['name'] = recipe.name
-        data['image'] = recipe.image
+        data['image'] = recipe.image.url
         data['cooking_time'] = recipe.cooking_time
         return data
