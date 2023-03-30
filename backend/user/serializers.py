@@ -1,9 +1,6 @@
-from django.forms import ValidationError
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
-                                   HTTP_400_BAD_REQUEST)
 
 from recipes.models import RecipeList
 
@@ -80,9 +77,7 @@ class SubscribeSeializer(serializers.ModelSerializer):
         recipes = RecipeList.objects.filter(author=obj)
         return ShortRecipeSerializer(recipes, many=True).data
 
-    def validate(self, attrs):
-        return super().validate(attrs)
-    
     def create(self, validated_data):
-
-        return super().create(validated_data)
+        subscriber = validated_data.get('subscriber')
+        author = validated_data.get('author')
+        return Subscribe.objects.create(subscriber=subscriber, author=author)

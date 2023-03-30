@@ -27,36 +27,32 @@ class SubscriptionsViweSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        authors = Subscribe.objects.filter(subscriber=self.request.user)
+        return User.objects.filter(subscriber__author=self.request.user)
 
-        return authors
-
-    # def create(self, request, *args, **kwargs):
-    #     subscriber = request.user
-    #     author = get_object_or_404(User, pk=self.kwargs['author_id'])
-    #     if subscriber == author:
-    #         return Response(
-    #             'Вы не можете подписаться на самого себя',
-    #             status=HTTP_400_BAD_REQUEST
-    #         )
-    #     if Subscribe.objects.filter(
-    #         author_id=self.kwargs['author_id'], subscriber=request.user
-    #     ):
-    #         return Response(
-    #             'Вы уже подписаны на этого автора',
-    #             status=HTTP_400_BAD_REQUEST
-    #         )
-    #     # Subscribe.objects.create(subscriber=subscriber, author=author)
-    #     serializer = self.get_serializer(data=subscriber.values())
-    #     serializer.is_valid(raise_exception=True)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(
-    #         serializer.data, status=HTTP_201_CREATED, headers=headers
-    #     )
-
-    # def perform_create(self, serializer, subscriber, author):
-    #     serializer.save(subscriber=subscriber, author=author)
-
+    def create(self, request, *args, **kwargs):
+        subscriber = request.user
+        author = get_object_or_404(User, pk=self.kwargs['author_id'])
+        if subscriber == author:
+            return Response(
+                'Вы не можете подписаться на самого себя',
+                status=HTTP_400_BAD_REQUEST
+            )
+        if Subscribe.objects.filter(
+            author_id=self.kwargs['author_id'], subscriber=request.user
+        ):
+            return Response(
+                'Вы уже подписаны на этого автора',
+                status=HTTP_400_BAD_REQUEST
+            )
+        # Subscribe.objects.create(subscriber=subscriber, author=author)
+        serializer = SubscribeSeializer(author, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = {'author': author, 'subscriber': subscriber}
+        serializer.create(data)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=HTTP_201_CREATED, headers=headers
+        )
 
     def destroy(self, request, *args, **kwargs):
         instance = Subscribe.objects.filter(
