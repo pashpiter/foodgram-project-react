@@ -1,5 +1,9 @@
+from django.forms import ValidationError
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
+                                   HTTP_400_BAD_REQUEST)
 
 from recipes.models import RecipeList
 
@@ -46,27 +50,39 @@ class UserGetSerializer(UserSerializer):
         return author.filter(subscriber=sub).exists()
 
 
-class IsSubscribedSeializer(serializers.ModelSerializer):
-    """Сериализатор для подписок"""
-    author = serializers.HiddenField(
-        default=UserRegistrationSerializer(), required=False
-    )
-    subscriber = serializers.HiddenField(default=False)
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
 
     class Meta:
-        model = Subscribe
-        fields = ('author', 'subscriber')
+        model = RecipeList
+        fields = ('id', 'name', 'image', 'cooking_time')
 
-    def to_representation(self, instance):
-        recipes = RecipeList.objects.filter(author=instance.author)
-        data = super(IsSubscribedSeializer, self).to_representation(
-            instance.author)
-        data['id'] = instance.author.id
-        data['username'] = instance.author.username
-        data['email'] = instance.author.email
-        data['first_name'] = instance.author.first_name
-        data['last_name'] = instance.author.last_name
-        data['is_subscribed'] = True
-        data['recipes'] = recipes.values('id', 'name', 'image', 'cooking_time')
-        data['recipes_count'] = recipes.count()
-        return data
+
+class SubscribeSeializer(serializers.ModelSerializer):
+    """Сериализатор для подписок"""
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+        read_only_fields = ('username', 'email', 'first_name', 'last_name',)
+
+    def get_is_subscribed(self, obj):
+        return True
+
+    def get_recipes_count(self, obj):
+        return RecipeList.objects.filter(author=obj).count()
+
+    def get_recipes(self, obj):
+        recipes = RecipeList.objects.filter(author=obj)
+        return ShortRecipeSerializer(recipes, many=True).data
+
+    def validate(self, attrs):
+        return super().validate(attrs)
+    
+    def create(self, validated_data):
+
+        return super().create(validated_data)

@@ -7,7 +7,7 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 
 from .models import Subscribe, User
-from .serializers import IsSubscribedSeializer, UserRegistrationSerializer
+from .serializers import SubscribeSeializer, UserRegistrationSerializer
 
 
 class UserCreateGetPatchViewSet(UserViewSet):
@@ -21,37 +21,42 @@ class UserCreateGetPatchViewSet(UserViewSet):
             serializer.save(role='user')
 
 
-class SubscribeViewSet(viewsets.ModelViewSet):
-    """ViewSet для создания подписок"""
-    queryset = Subscribe.objects.all()
-    serializer_class = IsSubscribedSeializer
-    http_method_names = ['post', 'delete']
+class SubscriptionsViweSet(viewsets.ModelViewSet):
+    serializer_class = SubscribeSeializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, ]
 
-    def create(self, request, *args, **kwargs):
-        subscriber = get_object_or_404(User, pk=request.user.id)
-        author = get_object_or_404(User, pk=self.kwargs['author_id'])
-        if subscriber == author:
-            return Response(
-                'Вы не можете подписаться на самого себя',
-                status=HTTP_400_BAD_REQUEST
-            )
-        if Subscribe.objects.filter(
-            author_id=self.kwargs['author_id'], subscriber=request.user
-        ):
-            return Response(
-                'Вы уже подписаны на этого автора',
-                status=HTTP_400_BAD_REQUEST
-            )
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, subscriber, author)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=HTTP_201_CREATED, headers=headers
-        )
+    def get_queryset(self):
+        authors = Subscribe.objects.filter(subscriber=self.request.user)
 
-    def perform_create(self, serializer, subscriber, author):
-        serializer.save(subscriber=subscriber, author=author)
+        return authors
+
+    # def create(self, request, *args, **kwargs):
+    #     subscriber = request.user
+    #     author = get_object_or_404(User, pk=self.kwargs['author_id'])
+    #     if subscriber == author:
+    #         return Response(
+    #             'Вы не можете подписаться на самого себя',
+    #             status=HTTP_400_BAD_REQUEST
+    #         )
+    #     if Subscribe.objects.filter(
+    #         author_id=self.kwargs['author_id'], subscriber=request.user
+    #     ):
+    #         return Response(
+    #             'Вы уже подписаны на этого автора',
+    #             status=HTTP_400_BAD_REQUEST
+    #         )
+    #     # Subscribe.objects.create(subscriber=subscriber, author=author)
+    #     serializer = self.get_serializer(data=subscriber.values())
+    #     serializer.is_valid(raise_exception=True)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(
+    #         serializer.data, status=HTTP_201_CREATED, headers=headers
+    #     )
+
+    # def perform_create(self, serializer, subscriber, author):
+    #     serializer.save(subscriber=subscriber, author=author)
+
 
     def destroy(self, request, *args, **kwargs):
         instance = Subscribe.objects.filter(
@@ -63,9 +68,3 @@ class SubscribeViewSet(viewsets.ModelViewSet):
             )
         self.perform_destroy(instance)
         return Response('Вы отписались', status=HTTP_204_NO_CONTENT)
-
-
-class GetSubscriptionsView(viewsets.ReadOnlyModelViewSet):
-    """ViewSet для получения подписок"""
-    queryset = Subscribe.objects.all()
-    serializer_class = IsSubscribedSeializer
