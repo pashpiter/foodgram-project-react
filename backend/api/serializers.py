@@ -1,6 +1,8 @@
 from django.db.models import F
+from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
 
 from recipes.models import (Ingredient, IngredientInRecipe, IsFavorited,
@@ -61,8 +63,30 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        ingredients = self.initial_data['ingredients']
+        if len(ingredients) == 0:
+            raise serializers.ValidationError(
+                {'ingredients': ('Рецепт не может быть без ингредиентов!')},
+                code=HTTP_400_BAD_REQUEST
+            )
+        ingredient_list = []
+        for ingredient in ingredients:
+            current_ingredient = get_object_or_404(
+                Ingredient, pk=ingredient.get('id')
+            )
+            if current_ingredient in ingredients:
+                raise serializers.ValidationError(
+                    {'ingredients': ('Ингредиенты не могут повторяться!')},
+                    code=HTTP_400_BAD_REQUEST
+                )
+            if int(ingredient.get('amount')) > 10000:
+                raise serializers.ValidationError(
+                    {'ingredients': ('Количество не может быть больше 10000')},
+                    code=HTTP_400_BAD_REQUEST
+                )
+            ingredient_list.append(current_ingredient)
         data.update({
-            'ingredients': self.initial_data['ingredients'],
+            'ingredients': ingredient_list,
             'tags': self.initial_data['tags']
         })
         return data
