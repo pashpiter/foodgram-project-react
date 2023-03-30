@@ -12,12 +12,13 @@ class UserRegistrationSerializer(UserCreateSerializer):
     password = serializers.CharField(
         style={"input_type": "password"}, write_only=True
     )
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
             'id', 'username', 'email', 'first_name',
-            'last_name', 'password')
+            'last_name', 'password', 'is_subscribed')
 
     def validate(self, data):
         if not data.get('username'):
@@ -27,6 +28,13 @@ class UserRegistrationSerializer(UserCreateSerializer):
         if not data.get('last_name'):
             raise ValueError('Необходимо ввести last_name!')
         return data
+
+    def get_is_subscribed(self, obj):
+        author = Subscribe.objects.filter(author=obj)
+        if not author:
+            return False
+        sub = self.context['request'].user
+        return author.filter(subscriber=sub).exists()
 
 
 class UserGetSerializer(UserSerializer):
