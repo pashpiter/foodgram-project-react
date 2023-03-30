@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from user.models import Subscribe, User
 
-from .models import (Ingridient, IngridientInRecipe, IsFavorited,
+from .models import (Ingredient, IngredientInRecipe, IsFavorited,
                      IsInShippingCart, RecipeList, Tag)
 
 
@@ -13,11 +13,16 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-class IngridientAdmin(admin.ModelAdmin):
+class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'measurement_unit')
     search_fields = ('name', 'measurement_unit')
     list_filter = ('name', 'measurement_unit')
     empty_value_display = '-пусто-'
+
+
+class IngredientInRecipeInline(admin.StackedInline):
+    model = IngredientInRecipe
+    min_num = 1
 
 
 class RecipeListAdmin(admin.ModelAdmin):
@@ -31,6 +36,7 @@ class RecipeListAdmin(admin.ModelAdmin):
         'author', 'name', 'cooking_time'
     )
     empty_value_display = '-пусто-'
+    inlines = (IngredientInRecipeInline, )
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -49,9 +55,9 @@ class SubscribeAdmin(admin.ModelAdmin):
     )
 
 
-class IngridientInRecipeAdmin(admin.ModelAdmin):
+class IngredientInRecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'ingridient_in_recipe', 'recipe', 'amount'
+        'pk', 'ingredient_in_recipe', 'recipe', 'amount'
     )
 
 
@@ -68,10 +74,10 @@ class IsInShippingCartAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingridient, IngridientAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(RecipeList, RecipeListAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Subscribe, SubscribeAdmin)
-admin.site.register(IngridientInRecipe, IngridientInRecipeAdmin)
+admin.site.register(IngredientInRecipe, IngredientInRecipeAdmin)
 admin.site.register(IsFavorited, IsIsFavoritedAdmin)
 admin.site.register(IsInShippingCart, IsInShippingCartAdmin)

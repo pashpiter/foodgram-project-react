@@ -6,13 +6,12 @@ from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 
-from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
+from recipes.models import (Ingredient, IngredientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.models import User
 
 from .mixins import CreateDestroyViewSet
-from .permissions import IsAuthorOrAdminOrReadOnly
-from .serializers import (IngridientsSerializer, IsFavoriteSerializer,
+from .serializers import (IngredientsSerializer, IsFavoriteSerializer,
                           IsInShippingCartSerializer, RecipeSerializer,
                           TagSerializer)
 
@@ -24,10 +23,10 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet для ингредиентов"""
-    queryset = Ingridient.objects.all()
-    serializer_class = IngridientsSerializer
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientsSerializer
     pagination_class = None
 
     def get_queryset(self):
@@ -47,6 +46,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов"""
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthenticated]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -67,19 +67,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            self.permission_classes = [IsAuthenticatedOrReadOnly, ]
-        elif self.request.method == 'POST':
-            self.permission_classes = [IsAuthenticated, ]
-        elif self.request.method == 'PATCH':
-            self.permission_classes = [IsAuthorOrAdminOrReadOnly, ]
-        elif self.request.method == 'DELETE':
-            self.permission_classes = [IsAuthorOrAdminOrReadOnly, ]
-        else:
-            self.permission_classes = [IsAuthenticated, ]
-        return super().get_permissions()
 
 
 class FavoriteViewSet(CreateDestroyViewSet):
@@ -168,25 +155,25 @@ class DownloadShippingCartViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         recipes = IsInShippingCart.objects.filter(user_cart_id=request.user.id)
-        end_ingridients = {}
+        end_ingredients = {}
         for recipe in recipes:
-            ingridients = IngridientInRecipe.objects.filter(
+            ingredients = IngredientInRecipe.objects.filter(
                 recipe=recipe.food_list
             )
-            for ingridient in ingridients:
-                if ingridient.ingridient_in_recipe.id not in end_ingridients:
-                    end_ingridients[
-                        ingridient.ingridient_in_recipe.id] = ingridient
+            for ingredient in ingredients:
+                if ingredient.ingredient_in_recipe.id not in end_ingredients:
+                    end_ingredients[
+                        ingredient.ingredient_in_recipe.id] = ingredient
                 else:
-                    end_ingridients[
-                        ingridient.ingridient_in_recipe.id
-                    ].amount += ingridient.amount
+                    end_ingredients[
+                        ingredient.ingredient_in_recipe.id
+                    ].amount += ingredient.amount
         shopping_list = ''
-        for ingridient in end_ingridients.values():
+        for ingredient in end_ingredients.values():
             item = (''.join(
-                f'{ingridient.ingridient_in_recipe.name} '
-                f'({ingridient.ingridient_in_recipe.measurement_unit}) - '
-                f'{ingridient.amount}\n'
+                f'{ingredient.ingredient_in_recipe.name} '
+                f'({ingredient.ingredient_in_recipe.measurement_unit}) - '
+                f'{ingredient.amount}\n'
             ))
             shopping_list += item
         return HttpResponse(

@@ -3,11 +3,11 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 
-from recipes.models import (Ingridient, IngridientInRecipe, IsFavorited,
+from recipes.models import (Ingredient, IngredientInRecipe, IsFavorited,
                             IsInShippingCart, RecipeList, Tag)
 from user.serializers import UserRegistrationSerializer
 
-from .utils import updateingridientsinrecipe
+from .utils import create_update_ingredients_in_recipe
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -18,23 +18,23 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'color', 'slug')
 
 
-class IngridientsInRecipeSerializer(serializers.ModelSerializer):
+class IngredientsInRecipeSerializer(serializers.ModelSerializer):
     """Сериалайзер для добавления ингредиентов в рецепт"""
     id = serializers.IntegerField()
 
     class Meta:
-        model = IngridientInRecipe
+        model = IngredientInRecipe
         fields = ('__all__')
         read_only_fields = (
-            'recipe', 'ingridient_in_recipe', 'measurement_unit'
+            'recipe', 'ingredient_in_recipe', 'measurement_unit'
         )
 
 
-class IngridientsSerializer(serializers.ModelSerializer):
+class IngredientsSerializer(serializers.ModelSerializer):
     """Сериалайзер для ингредиентов"""
 
     class Meta:
-        model = Ingridient
+        model = Ingredient
         fields = ('__all__')
         read_only_fields = ('name', 'measurement_unit')
 
@@ -56,45 +56,36 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('author', 'is_favorited', 'is_in_shopping_cart')
 
     def get_ingredients(self, obj):
-        return obj.ingridients.values(
-            'id', 'name', 'measurement_unit', amount=F('in_ingridient__amount')
+        return obj.ingredients.values(
+            'id', 'name', 'measurement_unit', amount=F('in_ingredient__amount')
         )
 
     def validate(self, data):
         data.update({
-            'ingridients': self.initial_data['ingredients'],
+            'ingredients': self.initial_data['ingredients'],
             'tags': self.initial_data['tags']
         })
         return data
 
     def create(self, validated_data):
-        ingridients = validated_data.pop('ingridients')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = RecipeList.objects.create(**validated_data)
         recipe.tags.add(*tags)
-        for ingridient in ingridients:
-            current_ingridient = Ingridient.objects.get(id=ingridient['id'])
-            IngridientInRecipe.objects.create(
-                ingridient_in_recipe=current_ingridient, recipe=recipe,
-                amount=ingridient['amount']
-            )
-            recipe.ingridients.add(
-                current_ingridient,
-                through_defaults={'amount': ingridient['amount']}
-            )
+        create_update_ingredients_in_recipe(recipe, ingredients)
         return recipe
 
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
-        ingridients = validated_data.pop('ingridients')
+        ingredients = validated_data.pop('ingredients')
 
         if tags:
             instance.tags.clear()
             instance.tags.set(tags)
 
-        if ingridients:
-            instance.ingridients.clear()
-            updateingridientsinrecipe(instance, ingridients)
+        if ingredients:
+            instance.ingredients.clear()
+            create_update_ingredients_in_recipe(instance, ingredients)
 
         instance.save()
         return instance

@@ -52,10 +52,6 @@ class User(AbstractUser):
         return self.role == self.ADMIN_ROLE
 
     @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR_ROLE
-
-    @property
     def is_user(self):
         return self.role == self.USER_ROLE
 
@@ -81,3 +77,8 @@ class Subscribe(models.Model):
         verbose_name='Сабскрайбер',
         on_delete=models.CASCADE,
     )
+
+    class Meta:
+        ordering = ('author',)
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
