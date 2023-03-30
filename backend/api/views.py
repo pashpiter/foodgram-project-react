@@ -50,9 +50,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        tags = self.request.query_params.get('tags')
+        tags = self.request.query_params.getlist('tags')
         if tags:
-            queryset = queryset.filter(tags__slug=tags).distinct()
+            for tag in tags:
+                queryset = queryset.filter(tags__slug=tag).distinct()
         author = self.request.query_params.get('author')
         if author:
             queryset = queryset.filter(author__id=author)
