@@ -27,7 +27,7 @@ class SubscriptionsViweSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return User.objects.filter(subscriber__author=self.request.user)
+        return User.objects.filter(author__subscriber=self.request.user)
 
     def create(self, request, *args, **kwargs):
         subscriber = request.user
