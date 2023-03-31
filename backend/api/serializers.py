@@ -86,7 +86,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 )
             ingredient_list.append(current_ingredient)
         data.update({
-            'ingredients': ingredient_list,
+            'ingredients': ingredients,
             'tags': self.initial_data['tags']
         })
         return data
