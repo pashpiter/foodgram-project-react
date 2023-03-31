@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
@@ -11,6 +12,7 @@ from recipes.models import (Ingredient, IngredientInRecipe, IsFavorited,
 from user.models import User
 
 from .mixins import CreateDestroyViewSet
+from .filters import TagAuthorFavoriteCartFilter
 from .serializers import (IngredientsSerializer, IsFavoriteSerializer,
                           IsInShippingCartSerializer, RecipeSerializer,
                           TagSerializer)
@@ -47,24 +49,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = RecipeList.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthenticated]
-
-    def get_queryset(self):
-        queryset = self.queryset
-        tags = self.request.query_params.getlist('tags')
-        if tags:
-            for tag in tags:
-                queryset = queryset.filter(tags__slug=tag).distinct()
-        author = self.request.query_params.get('author')
-        if author:
-            queryset = queryset.filter(author__id=author)
-        if not self.request._user.is_authenticated:
-            return queryset
-
-        if self.request.query_params.get('is_favorited'):
-            queryset = queryset.filter(fav_recipe__follower=self.request.user)
-        if not self.request.query_params.get('is_in_shopping_cart'):
-            return queryset
-        return queryset.filter(food_list__user_cart=self.request.user)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TagAuthorFavoriteCartFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
